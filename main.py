@@ -1,28 +1,20 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List
+
+from src.dtos.ISayHelloDto import ISayHelloDto
 
 app = FastAPI()
 
-# Model untuk pesan
-class Message(BaseModel):
-    sender: str
-    receiver: str
-    text: str
 
-# Database sementara
-messages = []
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
 
-@app.post("/send/")
-def send_message(message: Message):
-    messages.append(message)
-    return {"message": "Pesan berhasil dikirim!"}
 
-@app.get("/messages/", response_model=List[Message])
-def get_messages():
-    return messages
+@app.get("/hello/{name}")
+async def say_hello(name: str):
+    return {"message": f"Hello {name}"}
 
-@app.delete("/clear/")
-def clear_messages():
-    messages.clear()
-    return {"message": "Semua pesan telah dihapus!"}
+
+@app.post("/hello")
+async def hello_message(dto: ISayHelloDto):
+    return {"message": f"Hello {dto.message}"}
